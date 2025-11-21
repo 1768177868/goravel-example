@@ -72,4 +72,15 @@ func Web() {
 	facades.Route().Fallback(func(ctx http.Context) http.Response {
 		return ctx.Response().String(http.StatusNotFound, "fallback")
 	})
+
+	// 1. 聊天室页面路由（访问聊天界面）
+	facades.Route().StaticFile("chat.html", "./resources/views/chat.html")
+
+	// 2. WebSocket连接路由（后端处理消息）
+	chatController := controllers.NewChatController()
+	facades.Route().Get("/ws/chat", chatController.Server)
+
+	// 3. HTTP接口发送聊天室消息（支持GET/POST）
+	facades.Route().Post("/api/chat/send", chatController.SendMsgByHttp)
+	facades.Route().Get("/api/chat/send", chatController.SendMsgByHttp)
 }
